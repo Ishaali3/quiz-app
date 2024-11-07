@@ -1,0 +1,18 @@
+{
+  "quizId": 1,
+  "quizTitle": "JavaScript Basics",
+  "questions": [
+    {
+      "id": 1,
+      "text": "What is the correct syntax to print a message in JavaScript?",
+      "options": ["console.log()", "print.console()", "log.console()"],
+      "correctAnswer": "console.log()"
+    },
+    {
+      "id": 2,
+      "text": "Which of these is not a JavaScript data type?",
+      "options": ["String", "Boolean", "Integer", "Object"],
+      "correctAnswer": "Integer"
+    }
+  ]
+}

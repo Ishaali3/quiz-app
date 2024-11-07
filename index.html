@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Quiz App!</h1>
+
+        <!-- Quiz Container (Where content is dynamically inserted using Handlebars) -->
+        <div id="quiz-container"></div>
+    </div>
+
+    <!-- Handlebars templates -->
+    <script id="name-template" type="text/x-handlebars-template">
+        <h2>Welcome to the Quiz, <span>{{name}}</span>!</h2>
+        <p>Please choose a quiz:</p>
+        <select id="quiz-selection">
+            <option value="quiz1">Quiz 1: Programming Basics</option>
+            <option value="quiz2">Quiz 2: JavaScript Advanced</option>
+        </select>
+        <button id="start-quiz" class="btn btn-primary mt-3">Start Quiz</button>
+    </script>
+
+    <script id="question-template" type="text/x-handlebars-template">
+        <h3>{{question}}</h3>
+        <ul>
+            {{#each options}}
+                <li><button class="btn btn-secondary option-btn">{{this}}</button></li>
+            {{/each}}
+        </ul>
+        <p>Question {{currentQuestionIndex}} of {{totalQuestions}}.</p>
+    </script>
+
+    <script id="feedback-template" type="text/x-handlebars-template">
+        <p>{{feedbackMessage}}</p>
+        {{#if correct}}
+            <p class="text-success">Awesome! You got it right!</p>
+        {{else}}
+            <p class="text-danger">Oops! The correct answer is: {{correctAnswer}}</p>
+        {{/if}}
+        <button id="next-question" class="btn btn-primary">Got it</button>
+    </script>
+
+    <!-- Handlebars Library -->
+    <script src="https://cdn.jsdelivr.net/npm/handlebars/dist/handlebars.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
