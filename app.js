@@ -1,132 +1,93 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const quizContainer = document.getElementById('quiz-container');
+document.addEventListener('DOMContentLoaded', function() {
+  const nameForm = document.getElementById('name-form');
+  const studentNameInput = document.getElementById('student-name');
+  const studentNameDisplay = document.getElementById('student-name-display');
+  const welcomeScreen = document.getElementById('welcome-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const quiz1Btn = document.getElementById('quiz1-btn');
+  const quiz2Btn = document.getElementById('quiz2-btn');
+
+  let studentName = '';
+
+  // Handle form submission
+  nameForm.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form from reloading the page
+    studentName = studentNameInput.value.trim();
+    if (studentName) {
+      studentNameDisplay.textContent = studentName;  // Display the student's name in quiz selection
+      welcomeScreen.style.display = 'none';           // Hide the welcome screen
+      quizScreen.style.display = 'block';            // Show the quiz selection screen
+    } else {
+      alert('Please enter your name!');
+    }
+  });
+
+  // Handle quiz selection
+  quiz1Btn.addEventListener('click', function() {
+    startQuiz(1);
+  });
+
+  quiz2Btn.addEventListener('click', function() {
+    startQuiz(2);
+  });
+
+  // Start the quiz
+  function startQuiz(quizNumber) {
+    quizScreen.style.display = 'none';  // Hide quiz selection screen
+    loadQuiz(quizNumber);               // Load the selected quiz
+  }
+
+  // Load quiz questions (this function should retrieve questions from your API)
+  function loadQuiz(quizNumber) {
+    // Example quiz data (you can replace this with a fetch call to your static API)
+    const quizData = {
+      1: [
+        { question: 'What is JavaScript?', options: ['Programming Language', 'Animal', 'Food'], answer: 'Programming Language' },
+        { question: 'What is the correct syntax for a JavaScript function?', options: ['function()', 'function[]', 'function{}'], answer: 'function()' }
+      ],
+      2: [
+        { question: 'What does HTML stand for?', options: ['HyperText Markup Language', 'HyperTool Markup Language', 'HighText Markup Language'], answer: 'HyperText Markup Language' },
+        { question: 'What does CSS stand for?', options: ['Cascading Style Sheets', 'Cascading Syntax Sheets', 'Creative Style Sheets'], answer: 'Cascading Style Sheets' }
+      ]
+    };
+
+    const questions = quizData[quizNumber];
+    const quizView = document.getElementById('quiz-view');
     let currentQuestionIndex = 0;
-    let score = 0;
-    const totalQuestions = 5;
-    let questions = [];
-    const name = 'Student'; // You can change this to any name or get it dynamically later
 
-    // Handlebars templates
-    const nameTemplateSource = document.getElementById('name-template').innerHTML;
-    const questionTemplateSource = document.getElementById('question-template').innerHTML;
-    const feedbackTemplateSource = document.getElementById('feedback-template').innerHTML;
+    // Display the first question
+    displayQuestion(questions[currentQuestionIndex]);
 
-    const nameTemplate = Handlebars.compile(nameTemplateSource);
-    const questionTemplate = Handlebars.compile(questionTemplateSource);
-    const feedbackTemplate = Handlebars.compile(feedbackTemplateSource);
-
-    // Display the welcome page with the name
-    function displayWelcomePage() {
-        const context = { name: name };
-        const html = nameTemplate(context);
-        quizContainer.innerHTML = html;
-
-        // Event listener to start quiz
-        const startButton = document.getElementById('start-quiz');
-        startButton.addEventListener('click', startQuiz);
-    }
-
-    // Fetch questions and start the quiz
-    async function startQuiz() {
-        try {
-            // Simulating fetch from an API (you can replace with real API later)
-            questions = await fetchQuizData();
-            displayQuestion(questions[currentQuestionIndex]);
-        } catch (error) {
-            console.error('Error fetching quiz data:', error);
-        }
-    }
-
-    // Function to fetch quiz data (for this example, we'll simulate static data)
-    async function fetchQuizData() {
-        return [
-            {
-                question: "What is 2 + 2?",
-                options: ["2", "4", "6", "8"],
-                correctAnswer: "4",
-                feedbackMessage: "Basic math question."
-            },
-            {
-                question: "Which language is this quiz built with?",
-                options: ["Python", "JavaScript", "Ruby", "C++"],
-                correctAnswer: "JavaScript",
-                feedbackMessage: "The quiz is built using JavaScript!"
-            },
-            {
-                question: "What does 'DOM' stand for in web development?",
-                options: ["Document Object Model", "Data Object Model", "Document Operation Mode", "Data Operation Model"],
-                correctAnswer: "Document Object Model",
-                feedbackMessage: "DOM stands for Document Object Model."
-            },
-            {
-                question: "Which company created JavaScript?",
-                options: ["Microsoft", "Google", "Mozilla", "Netscape"],
-                correctAnswer: "Netscape",
-                feedbackMessage: "JavaScript was created by Netscape."
-            },
-            {
-                question: "Which HTML tag is used to define an internal style sheet?",
-                options: ["<script>", "<style>", "<link>", "<meta>"],
-                correctAnswer: "<style>",
-                feedbackMessage: "The <style> tag is used for internal styles."
-            }
-        ];
-    }
-
-    // Function to display a question
+    // Handle question navigation
     function displayQuestion(question) {
-        const context = {
-            question: question.question,
-            options: question.options,
-            currentQuestionIndex: currentQuestionIndex + 1,
-            totalQuestions: totalQuestions
-        };
-        const html = questionTemplate(context);
-        quizContainer.innerHTML = html;
+      const questionContainer = document.createElement('div');
+      questionContainer.innerHTML = `
+        <h3>${question.question}</h3>
+        <ul>
+          ${question.options.map(option => `<li><button class="btn btn-light option">${option}</button></li>`).join('')}
+        </ul>
+      `;
+      quizView.innerHTML = '';
+      quizView.appendChild(questionContainer);
 
-        // Event listener for selecting an answer
-        const optionButtons = document.querySelectorAll('.option-btn');
-        optionButtons.forEach(button => {
-            button.addEventListener('click', (event) => handleAnswer(event.target.innerText, question.correctAnswer, question.feedbackMessage));
-        });
-    }
-
-    // Function to handle answer selection
-    function handleAnswer(selectedAnswer, correctAnswer, feedbackMessage) {
-        const isCorrect = selectedAnswer === correctAnswer;
-        score += isCorrect ? 1 : 0;
-
-        // Show feedback after the answer is selected
-        const context = {
-            correct: isCorrect,
-            feedbackMessage: feedbackMessage,
-            correctAnswer: correctAnswer
-        };
-        const html = feedbackTemplate(context);
-        quizContainer.innerHTML = html;
-
-        // Event listener to move to the next question
-        const nextButton = document.getElementById('next-question');
-        nextButton.addEventListener('click', nextQuestion);
-    }
-
-    // Function to move to the next question
-    function nextQuestion() {
-        if (currentQuestionIndex < totalQuestions - 1) {
+      // Add event listeners to the options
+      const optionButtons = quizView.querySelectorAll('.option');
+      optionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const selectedOption = button.textContent;
+          if (selectedOption === question.answer) {
+            alert('Correct! Well done!');
             currentQuestionIndex++;
-            displayQuestion(questions[currentQuestionIndex]);
-        } else {
-            displayResults();
-        }
+            if (currentQuestionIndex < questions.length) {
+              displayQuestion(questions[currentQuestionIndex]);
+            } else {
+              alert(`Congratulations ${studentName}, you've completed the quiz!`);
+            }
+          } else {
+            alert(`Incorrect! The correct answer is: ${question.answer}`);
+          }
+        });
+      });
     }
-
-    // Function to display the quiz results
-    function displayResults() {
-        const passMessage = score >= (totalQuestions * 0.8) ? `Congratulations ${name}! You passed the quiz!` : `Sorry ${name}, you failed the quiz.`;
-        const context = { passMessage: passMessage, score: score, totalQuestions: totalQuestions };
-        quizContainer.innerHTML = `<h3>${context.passMessage}</h3><p>Your Score: ${context.score} / ${context.totalQuestions}</p><button onclick="window.location.reload()" class="btn btn-primary">Retake Quiz</button>`;
-    }
-
-    // Start by displaying the welcome page
-    displayWelcomePage();
+  }
 });
